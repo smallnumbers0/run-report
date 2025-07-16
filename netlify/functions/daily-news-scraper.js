@@ -63,92 +63,12 @@ async function fetchNewsContent(source) {
           link = source.url + '/' + link;
         }
         
-        let imageUrl = null;
-        
-        const imageSelectors = [
-          'img[src]',
-          'img[data-src]', 
-          'img[data-lazy-src]',
-          'img[data-original]',
-          '[style*="background-image"]'
-        ];
-        
-        const $parent = $elem.closest('article, .article, .post, .story, .card, .item, .entry, .content');
-        if ($parent.length && !imageUrl) {
-          for (const selector of imageSelectors) {
-            const $img = $parent.find(selector).first();
-            if ($img.length) {
-              imageUrl = $img.attr('src') || $img.attr('data-src') || $img.attr('data-lazy-src') || $img.attr('data-original');
-              if (imageUrl) break;
-            }
-          }
-        }
-        
-        if (!imageUrl) {
-          const $siblings = $elem.parent().siblings();
-          for (const selector of imageSelectors) {
-            const $img = $siblings.find(selector).first();
-            if ($img.length) {
-              imageUrl = $img.attr('src') || $img.attr('data-src') || $img.attr('data-lazy-src') || $img.attr('data-original');
-              if (imageUrl) break;
-            }
-          }
-        }
-
-        if (!imageUrl) {
-          const $container = $elem.parent().parent();
-          for (const selector of imageSelectors) {
-            const $img = $container.find(selector).first();
-            if ($img.length) {
-              imageUrl = $img.attr('src') || $img.attr('data-src') || $img.attr('data-lazy-src') || $img.attr('data-original');
-              if (imageUrl) break;
-            }
-          }
-        }
-        
-        if (!imageUrl) {
-          const $ogImage = $('meta[property="og:image"]');
-          if ($ogImage.length) {
-            imageUrl = $ogImage.attr('content');
-          }
-        }
-
-        if (imageUrl) {
-          if (imageUrl.startsWith('/')) {
-            const baseUrl = new URL(source.url).origin;
-            imageUrl = baseUrl + imageUrl;
-          } else if (!imageUrl.startsWith('http')) {
-            const baseUrl = new URL(source.url).origin;
-            imageUrl = baseUrl + '/' + imageUrl;
-          }
-          
-    
-          const unwantedPatterns = [
-            'logo', 'icon', 'avatar', 'profile', 'user', 'author',
-            '1x1', 'placeholder', 'blank', 'spacer', 'pixel',
-            'facebook', 'twitter', 'instagram', 'social',
-            'advertisement', 'ad', 'banner', 'sponsor'
-          ];
-          
-          const shouldFilter = unwantedPatterns.some(pattern => 
-            imageUrl.toLowerCase().includes(pattern)
-          );
-          
-          
-          const hasSmallDimensions = /\/\d{1,2}x\d{1,2}\/|_\d{1,2}x\d{1,2}\.|\/\d{1,2}\/|\b\d{1,2}x\d{1,2}\b/.test(imageUrl);
-           if (shouldFilter || hasSmallDimensions) {
-            imageUrl = null;
-          }
-        }
-        
-        // Only use images that are actually found on the website (no fallbacks)
-        console.log(`📸 Image for "${title.substring(0, 50)}...": ${imageUrl ? 'Found' : 'None'}`);
+        console.log(`📄 Article: "${title.substring(0, 50)}..."`);
 
         articles.push({
           title: title,
           link: link,
-          source: source.name,
-          imageUrl: imageUrl // Will be null if no real image found
+          source: source.name
         });
       }
     });
@@ -183,7 +103,6 @@ async function generateNewsWithOpenAI(article, apiKey) {
 Title: "${article.title}"
 Source: ${article.source}
 Link: ${article.link}
-${article.imageUrl ? `Image: ${article.imageUrl}` : ''}
 
 Return only valid JSON with this format:
 {
@@ -191,7 +110,7 @@ Return only valid JSON with this format:
   "date": "${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}",
   "content": "4-5 sentences of engaging summary based on the article",
   "source": "${article.source}",
-  "link": "${article.link}"${article.imageUrl ? `,\n  "imageUrl": "${article.imageUrl}"` : ''}
+  "link": "${article.link}"
 }`
         }
       ],
@@ -295,9 +214,28 @@ export const handler = async (event, context) => {
     
   
     const candidateArticles = [...priorityArticles, ...otherArticles];
-    const selectedArticles = candidateArticles.slice(0, 2).length >= 2 
-      ? candidateArticles.slice(0, 2) 
-      : allArticles.slice(0, 2); 
+    
+    // Select up to 3 articles from different sources to ensure diversity
+    const selectedArticles = [];
+    const usedSources = new Set();
+    
+    for (const article of candidateArticles) {
+      if (selectedArticles.length >= 3) break;
+      if (!usedSources.has(article.source)) {
+        selectedArticles.push(article);
+        usedSources.add(article.source);
+      }
+    }
+    
+    // If we don't have 3 articles from different sources, fill with remaining articles
+    if (selectedArticles.length < 3) {
+      for (const article of candidateArticles) {
+        if (selectedArticles.length >= 3) break;
+        if (!selectedArticles.some(selected => selected.link === article.link)) {
+          selectedArticles.push(article);
+        }
+      }
+    } 
     
     console.log(`🎯 Selected ${selectedArticles.length} articles for processing`);
     
