@@ -138,7 +138,8 @@ async function updateContentWithWebhook(newsEntry, webhookUrl) {
     },
     body: JSON.stringify({
       action: 'add_article',
-      article: newsEntry
+      article: newsEntry,
+      timestamp: new Date().toISOString()
     })
   });
   
@@ -174,26 +175,45 @@ export const handler = async (event, context) => {
     
     console.log(`📊 Found ${allArticles.length} total articles`);
     
-    // Pick the best article
-    let selectedArticle = allArticles.find(article => 
-      article.source === 'The New York Times' || 
-      article.source === 'Runner\'s World' ||
-      article.source === 'FloTrack' ||
-      article.source === 'Running USA'
-    ) || allArticles.find(article => 
+    // Select 2 best articles
+    const prioritySources = ['The New York Times', 'Runner\'s World', 'FloTrack', 'Running USA'];
+    
+    // Get high-priority articles first
+    const priorityArticles = allArticles.filter(article => 
+      prioritySources.includes(article.source) && 
       !article.title.toLowerCase().includes('air quality')
-    ) || allArticles[0];
+    );
     
-    // Generate summary with OpenAI
-    console.log('🤖 Creating summary with OpenAI...');
-    const newsEntry = await generateNewsWithOpenAI(selectedArticle, OPENAI_API_KEY);
+    // Get other interesting articles (avoid air quality and generic titles)
+    const otherArticles = allArticles.filter(article => 
+      !prioritySources.includes(article.source) &&
+      !article.title.toLowerCase().includes('air quality') &&
+      !article.title.toLowerCase().includes('weather') &&
+      !article.title.toLowerCase().includes('forecast')
+    );
     
-    console.log('📝 Generated entry:', newsEntry.title);
+    // Combine and take best 2 articles
+    const candidateArticles = [...priorityArticles, ...otherArticles];
+    const selectedArticles = candidateArticles.slice(0, 2).length >= 2 
+      ? candidateArticles.slice(0, 2) 
+      : allArticles.slice(0, 2); // Fallback to any 2 articles if not enough candidates
     
-    // If webhook URL is provided, trigger rebuild
+    console.log(`🎯 Selected ${selectedArticles.length} articles for processing`);
+    
+    // Generate summaries with OpenAI for both articles
+    console.log('🤖 Creating summaries with OpenAI...');
+    const newsEntries = await Promise.all(
+      selectedArticles.map(article => generateNewsWithOpenAI(article, OPENAI_API_KEY))
+    );
+    
+    console.log(`📝 Generated ${newsEntries.length} entries:`, newsEntries.map(entry => entry.title));
+    
+    // If webhook URL is provided, trigger rebuild with both articles
     if (WEBHOOK_URL) {
-      await updateContentWithWebhook(newsEntry, WEBHOOK_URL);
-      console.log('🔄 Triggered site rebuild');
+      await Promise.all(
+        newsEntries.map(entry => updateContentWithWebhook(entry, WEBHOOK_URL))
+      );
+      console.log('🔄 Triggered site rebuild with multiple articles');
     }
     
     return {
@@ -204,8 +224,9 @@ export const handler = async (event, context) => {
       },
       body: JSON.stringify({
         success: true,
-        article: newsEntry,
-        articlesFound: allArticles.length
+        articles: newsEntries, // Now returns array of articles
+        articlesFound: allArticles.length,
+        articlesProcessed: newsEntries.length
       })
     };
     
