@@ -1,0 +1,21 @@
+name: Daily News Scraper
+
+on:
+  schedule:
+    # Run daily at 8:00 AM PST (4:00 PM UTC)
+    - cron: '0 16 * * *'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  scrape-news:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger News Scraper
+        run: |
+          curl -X POST "https://run-report.netlify.app/.netlify/functions/daily-news-scraper" \
+            -H "Content-Type: application/json" \
+            -d '{"source": "github-action"}'
+      
+      - name: Log completion
+        run: echo "Daily news scraper triggered at $(date)"
