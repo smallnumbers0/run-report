@@ -165,7 +165,7 @@ async function generateNewsWithOpenAI(article, apiKey) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini', // Upgraded from gpt-3.5-turbo for better summaries
+      model: 'gpt-4o-mini', 
       messages: [
         {
           role: 'system',
@@ -263,7 +263,13 @@ export const handler = async (event, context) => {
    
     const priorityArticles = allArticles.filter(article => 
       prioritySources.includes(article.source) && 
-      !article.title.toLowerCase().includes('air quality')
+      !article.title.toLowerCase().includes('air quality') &&
+      !article.title.toLowerCase().includes('subscribe') &&
+      !article.title.toLowerCase().includes('youtube') &&
+      !article.title.toLowerCase().includes('follow us') &&
+      !article.title.toLowerCase().includes('newsletter') &&
+      !article.title.toLowerCase().includes('sign up') &&
+      !article.title.toLowerCase().includes('join our')
     );
     
  
@@ -271,7 +277,13 @@ export const handler = async (event, context) => {
       !prioritySources.includes(article.source) &&
       !article.title.toLowerCase().includes('air quality') &&
       !article.title.toLowerCase().includes('weather') &&
-      !article.title.toLowerCase().includes('forecast')
+      !article.title.toLowerCase().includes('forecast') &&
+      !article.title.toLowerCase().includes('subscribe') &&
+      !article.title.toLowerCase().includes('youtube') &&
+      !article.title.toLowerCase().includes('follow us') &&
+      !article.title.toLowerCase().includes('newsletter') &&
+      !article.title.toLowerCase().includes('sign up') &&
+      !article.title.toLowerCase().includes('join our')
     );
     
   
