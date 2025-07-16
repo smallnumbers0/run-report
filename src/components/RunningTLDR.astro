@@ -18,7 +18,7 @@ const allPosts = (blogPostsData as NewsArticle[]).sort((a, b) => {
 ---
 
 <div class="news-list">
-  <h1 class="news-title">Running TLDR</h1>
+  <h1 class="news-title"></h1>
   
   <div class="articles-container">
     {allPosts.map((post) => (
@@ -90,8 +90,7 @@ const allPosts = (blogPostsData as NewsArticle[]).sort((a, b) => {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     padding: 24px;
     margin-bottom: 24px;
-    border-left: 6px solid #ff1744;
-    border: 1px solid rgba(255, 23, 68, 0.2);
+    border: 3px solid rgba(255, 23, 68, 0.2);
     transition: all 0.3s ease-in-out;
     backdrop-filter: blur(10px);
   }
@@ -100,7 +99,6 @@ const allPosts = (blogPostsData as NewsArticle[]).sort((a, b) => {
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     border-color: rgba(255, 23, 68, 0.4);
-    border-left-color: #ff4569;
     background: rgba(30, 30, 30, 0.9);
   }
 
