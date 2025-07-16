@@ -27,7 +27,7 @@ const { activePage } = Astro.props;
 		top: 0;
 		z-index: 100;
 		border-bottom: 2px solid #ff1744;
-		box-shadow: 0 0 20px rgba(255, 23, 68, 0.3);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
 
 	.main-nav h1 {
@@ -52,18 +52,18 @@ const { activePage } = Astro.props;
 		transition: all 0.3s ease-in-out;
 		font-weight: 500;
 		border: 1px solid transparent;
+		background: rgba(255, 255, 255, 0.1);
 	}
 
 	.nav-link:hover {
-		background: rgba(255, 23, 68, 0.2);
-		border-color: #ff1744;
-		box-shadow: 0 0 15px rgba(255, 23, 68, 0.4);
-		transform: translateY(-2px);
+		background: rgba(255, 255, 255, 0.2);
+		border-color: rgba(255, 255, 255, 0.3);
+		transform: translateY(-1px);
 	}
 
 	.nav-link.active {
-		background: rgba(255, 23, 68, 0.3);
-		border-color: #ff1744;
-		box-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
+		background: rgba(255, 255, 255, 0.25);
+		border-color: rgba(255, 255, 255, 0.4);
+		font-weight: 600;
 	}
 </style>
