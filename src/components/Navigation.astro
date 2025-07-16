@@ -7,7 +7,7 @@ const { activePage } = Astro.props;
 ---
 
 <nav class="main-nav">
-	<h1>The Running Report</h1>
+	<img src="/favicon.svg" alt="Logo" width="40" height="40" />
 	<div class="nav-links">
 		<a href="/" class={`nav-link ${activePage === 'home' ? 'active' : ''}`}>Latest News</a>
 		<a href="/book" class={`nav-link ${activePage === 'book' ? 'active' : ''}`}>Book</a>
@@ -41,7 +41,7 @@ const { activePage } = Astro.props;
 
 	.nav-links {
 		display: flex;
-		gap: 16px;
+		gap: 1rem;
 	}
 
 	.nav-link {

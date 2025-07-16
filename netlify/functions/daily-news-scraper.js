@@ -58,10 +58,56 @@ async function fetchNewsContent(source) {
           link = source.url + '/' + link;
         }
         
+        // Try to find an associated image
+        let imageUrl = null;
+        
+        // Look for nearby images in various ways
+        const $parent = $elem.closest('article, .article, .post, .story, .card');
+        if ($parent.length) {
+          const $img = $parent.find('img').first();
+          if ($img.length) {
+            imageUrl = $img.attr('src') || $img.attr('data-src') || $img.attr('data-lazy-src');
+          }
+        }
+        
+        // If no image found, look for sibling images
+        if (!imageUrl) {
+          const $siblingImg = $elem.siblings().find('img').first();
+          if ($siblingImg.length) {
+            imageUrl = $siblingImg.attr('src') || $siblingImg.attr('data-src') || $siblingImg.attr('data-lazy-src');
+          }
+        }
+        
+        // If no image found, look for parent container images
+        if (!imageUrl) {
+          const $containerImg = $elem.parent().find('img').first();
+          if ($containerImg.length) {
+            imageUrl = $containerImg.attr('src') || $containerImg.attr('data-src') || $containerImg.attr('data-lazy-src');
+          }
+        }
+        
+        // Clean up image URL
+        if (imageUrl) {
+          if (imageUrl.startsWith('/')) {
+            const baseUrl = new URL(source.url).origin;
+            imageUrl = baseUrl + imageUrl;
+          } else if (!imageUrl.startsWith('http')) {
+            imageUrl = source.url + '/' + imageUrl;
+          }
+          
+          // Filter out small or irrelevant images
+          if (imageUrl.includes('logo') || imageUrl.includes('icon') || 
+              imageUrl.includes('avatar') || imageUrl.includes('profile') ||
+              imageUrl.includes('1x1') || imageUrl.includes('placeholder')) {
+            imageUrl = null;
+          }
+        }
+        
         articles.push({
           title: title,
           link: link,
-          source: source.name
+          source: source.name,
+          imageUrl: imageUrl
         });
       }
     });
@@ -96,6 +142,7 @@ async function generateNewsWithOpenAI(article, apiKey) {
 Title: "${article.title}"
 Source: ${article.source}
 Link: ${article.link}
+${article.imageUrl ? `Image: ${article.imageUrl}` : ''}
 
 Return only valid JSON with this format:
 {
@@ -103,7 +150,7 @@ Return only valid JSON with this format:
   "date": "${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}",
   "content": "2-3 sentence engaging summary based on the title",
   "source": "${article.source}",
-  "link": "${article.link}"
+  "link": "${article.link}"${article.imageUrl ? `,\n  "imageUrl": "${article.imageUrl}"` : ''}
 }`
         }
       ],
