@@ -10,6 +10,7 @@
     "netlify-dev": "netlify dev"
   },
   "dependencies": {
+    "@sanity/client": "^7.8.0",
     "astro": "^5.11.1",
     "cheerio": "^1.0.0-rc.12"
   },
