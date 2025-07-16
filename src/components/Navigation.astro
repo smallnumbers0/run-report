@@ -7,7 +7,7 @@ const { activePage } = Astro.props;
 ---
 
 <nav class="main-nav">
-	<img src="/favicon.svg" alt="Logo" width="40" height="40" />
+	<img src="/favicon.svg" alt="Logo" width="40" height="40" class="nav-logo" />
 	<div class="nav-links">
 		<a href="/" class={`nav-link ${activePage === 'home' ? 'active' : ''}`}>News</a>
 		<a href="/book" class={`nav-link ${activePage === 'book' ? 'active' : ''}`}>Book</a>
@@ -28,6 +28,11 @@ const { activePage } = Astro.props;
 		z-index: 100;
 		border-bottom: 2px solid #ff1744;
 		font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+	}
+
+	.nav-logo {
+		flex-shrink: 0;
+		display: block;
 	}
 
 	.main-nav h1 {
@@ -66,5 +71,28 @@ const { activePage } = Astro.props;
 		background: rgba(20, 20, 20, 0.8);
 		border-color: #ff1744;
 		font-weight: 600;
+	}
+
+	/* Mobile responsiveness */
+	@media (max-width: 768px) {
+		.main-nav {
+			padding: 12px 16px;
+		}
+
+		.nav-logo {
+			width: 36px !important;
+			height: 36px !important;
+			flex-shrink: 0;
+			display: block !important;
+		}
+
+		.nav-links {
+			gap: 0.5rem;
+		}
+
+		.nav-link {
+			padding: 6px 12px;
+			font-size: 13px;
+		}
 	}
 </style>
