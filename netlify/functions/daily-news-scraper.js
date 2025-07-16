@@ -139,12 +139,32 @@ async function fetchNewsContent(source) {
           
           // Also check image dimensions in URL (filter out very small images)
           const hasSmallDimensions = /\/\d{1,2}x\d{1,2}\/|_\d{1,2}x\d{1,2}\.|\/\d{1,2}\/|\b\d{1,2}x\d{1,2}\b/.test(imageUrl);
-          
-          if (shouldFilter || hasSmallDimensions) {
+           if (shouldFilter || hasSmallDimensions) {
             imageUrl = null;
           }
         }
         
+        // Add fallback images if no image found
+        if (!imageUrl) {
+          // Use running-related stock images as fallbacks
+          const fallbackImages = [
+            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Track running
+            'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Marathon runners
+            'https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Trail running
+            'https://images.unsplash.com/photo-1568667256549-094345857637?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Running shoes
+            'https://images.unsplash.com/photo-1526676037777-05a232d2ae80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'  // Running track
+          ];
+          
+          // Assign a consistent image based on article title hash
+          const titleHash = title.split('').reduce((a, b) => {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+          }, 0);
+          imageUrl = fallbackImages[Math.abs(titleHash) % fallbackImages.length];
+        }
+        
+        console.log(`📸 Image for "${title.substring(0, 50)}...": ${imageUrl ? 'Found' : 'None'}`);
+
         articles.push({
           title: title,
           link: link,
@@ -152,10 +172,26 @@ async function fetchNewsContent(source) {
           imageUrl: imageUrl
         });
       }
-    });
-    
-    console.log(`✅ Found ${articles.length} articles from ${source.name}`);
-    return articles.slice(0, 3);
+    });        // Add fallback images if no image found
+        if (!imageUrl) {
+          // Use running-related stock images as fallbacks
+          const fallbackImages = [
+            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Track running
+            'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Marathon runners
+            'https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Trail running
+            'https://images.unsplash.com/photo-1568667256549-094345857637?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Running shoes
+            'https://images.unsplash.com/photo-1526676037777-05a232d2ae80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'  // Running track
+          ];
+          
+          // Assign a consistent image based on article title hash
+          const titleHash = title.split('').reduce((a, b) => {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+          }, 0);
+          imageUrl = fallbackImages[Math.abs(titleHash) % fallbackImages.length];
+        }
+        
+        console.log(`📸 Image for "${title.substring(0, 50)}...": ${imageUrl ? 'Found' : 'None'}`);
     
   } catch (error) {
     console.error(`❌ Error fetching ${source.name}:`, error.message);
