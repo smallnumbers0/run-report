@@ -1,0 +1,37 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+---
+
+<Layout>
+	<Navigation activePage="about" />
+	
+	<div class="page-container">
+		<h1>About</h1>
+		<p>Coming soon...</p>
+	</div>
+</Layout>
+
+<style>
+	.page-container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 40px 24px;
+		text-align: center;
+	}
+
+	.page-container h1 {
+		color: #ff1744;
+		font-size: 36px;
+		font-weight: 700;
+		margin: 0 0 20px 0;
+		text-shadow: 0 0 20px rgba(255, 23, 68, 0.8);
+		letter-spacing: 2px;
+	}
+
+	.page-container p {
+		color: #e0e0e0;
+		font-size: 18px;
+		text-shadow: 0 0 10px rgba(224, 224, 224, 0.5);
+	}
+</style>

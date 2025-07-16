@@ -1,0 +1,69 @@
+---
+export interface Props {
+  activePage: 'home' | 'book' | 'about';
+}
+
+const { activePage } = Astro.props;
+---
+
+<nav class="main-nav">
+	<h1>The Running Report</h1>
+	<div class="nav-links">
+		<a href="/" class={`nav-link ${activePage === 'home' ? 'active' : ''}`}>Latest News</a>
+		<a href="/book" class={`nav-link ${activePage === 'book' ? 'active' : ''}`}>Book</a>
+		<a href="/about" class={`nav-link ${activePage === 'about' ? 'active' : ''}`}>About</a>
+	</div>
+</nav>
+
+<style>
+	.main-nav {
+		background: rgba(255, 20, 50, 0.15);
+		backdrop-filter: blur(10px);
+		padding: 16px 24px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		border-bottom: 2px solid #ff1744;
+		box-shadow: 0 0 20px rgba(255, 23, 68, 0.3);
+	}
+
+	.main-nav h1 {
+		color: #ffffff;
+		margin: 0;
+		font-size: 24px;
+		font-weight: 700;
+		letter-spacing: 1px;
+		text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+	}
+
+	.nav-links {
+		display: flex;
+		gap: 16px;
+	}
+
+	.nav-link {
+		color: #ffffff;
+		text-decoration: none;
+		padding: 8px 16px;
+		border-radius: 6px;
+		transition: all 0.3s ease-in-out;
+		font-weight: 500;
+		border: 1px solid transparent;
+	}
+
+	.nav-link:hover {
+		background: rgba(255, 23, 68, 0.2);
+		border-color: #ff1744;
+		box-shadow: 0 0 15px rgba(255, 23, 68, 0.4);
+		transform: translateY(-2px);
+	}
+
+	.nav-link.active {
+		background: rgba(255, 23, 68, 0.3);
+		border-color: #ff1744;
+		box-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
+	}
+</style>

@@ -1,0 +1,15 @@
+{
+  "name": "daily-news-scraper-ollama",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "scrape": "node news-scraper.js",
+    "scrape-test": "OLLAMA_MODEL=llama2 node news-scraper.js",
+    "scrape-mistral": "OLLAMA_MODEL=mistral node news-scraper.js",
+    "scrape-codellama": "OLLAMA_MODEL=codellama node news-scraper.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.0",
+    "node-cron": "^3.0.3"
+  }
+}
