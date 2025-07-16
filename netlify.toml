@@ -14,9 +14,4 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Schedule the news scraper to run daily at 8 AM PST
-[[plugins]]
-  package = "@netlify/plugin-scheduled-functions"
-
-[scheduled-functions]
-  "daily-news-scraper" = "0 8 * * *"
+# Modern Netlify scheduled functions (configured in dashboard or via API)
