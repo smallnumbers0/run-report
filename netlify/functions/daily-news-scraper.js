@@ -25,6 +25,11 @@ const NEWS_SOURCES = [
     url: 'https://www.runnersworld.com/news',
     name: 'Runner\'s World',
     selector: 'h3 a, .headline a, .listicle-slide-hed a'
+  },
+  {
+    url: 'https://www.letsrun.com/',
+    name: 'LetsRun',
+    selector: 'h2 a, h3 a, .headline a, .story-title a'
   }
 ];
 
@@ -258,7 +263,7 @@ export const handler = async (event, context) => {
     console.log(`📊 Found ${allArticles.length} total articles`);
     
 
-    const prioritySources = ['The New York Times', 'Runner\'s World', 'FloTrack', 'Running USA'];
+    const prioritySources = ['The New York Times', 'Runner\'s World', 'FloTrack', 'Running USA', 'LetsRun'];
     
    
     const priorityArticles = allArticles.filter(article => 
@@ -269,7 +274,8 @@ export const handler = async (event, context) => {
       !article.title.toLowerCase().includes('follow us') &&
       !article.title.toLowerCase().includes('newsletter') &&
       !article.title.toLowerCase().includes('sign up') &&
-      !article.title.toLowerCase().includes('join our')
+      !article.title.toLowerCase().includes('join our') &&
+      !article.link.includes('7882230-subscribe-to-our-youtube-channel') // Block specific article
     );
     
  
@@ -283,7 +289,8 @@ export const handler = async (event, context) => {
       !article.title.toLowerCase().includes('follow us') &&
       !article.title.toLowerCase().includes('newsletter') &&
       !article.title.toLowerCase().includes('sign up') &&
-      !article.title.toLowerCase().includes('join our')
+      !article.title.toLowerCase().includes('join our') &&
+      !article.link.includes('7882230-subscribe-to-our-youtube-channel') // Block specific article
     );
     
   
