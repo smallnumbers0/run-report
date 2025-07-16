@@ -58,47 +58,89 @@ async function fetchNewsContent(source) {
           link = source.url + '/' + link;
         }
         
-        // Try to find an associated image
+        // Try to find an associated image with more comprehensive selectors
         let imageUrl = null;
         
-        // Look for nearby images in various ways
-        const $parent = $elem.closest('article, .article, .post, .story, .card');
-        if ($parent.length) {
-          const $img = $parent.find('img').first();
-          if ($img.length) {
-            imageUrl = $img.attr('src') || $img.attr('data-src') || $img.attr('data-lazy-src');
+        // Try multiple strategies to find images
+        const imageSelectors = [
+          'img[src]',
+          'img[data-src]', 
+          'img[data-lazy-src]',
+          'img[data-original]',
+          '[style*="background-image"]'
+        ];
+        
+        // Strategy 1: Look in closest article/card container
+        const $parent = $elem.closest('article, .article, .post, .story, .card, .item, .entry, .content');
+        if ($parent.length && !imageUrl) {
+          for (const selector of imageSelectors) {
+            const $img = $parent.find(selector).first();
+            if ($img.length) {
+              imageUrl = $img.attr('src') || $img.attr('data-src') || $img.attr('data-lazy-src') || $img.attr('data-original');
+              if (imageUrl) break;
+            }
           }
         }
         
-        // If no image found, look for sibling images
+        // Strategy 2: Look for images in nearby siblings
         if (!imageUrl) {
-          const $siblingImg = $elem.siblings().find('img').first();
-          if ($siblingImg.length) {
-            imageUrl = $siblingImg.attr('src') || $siblingImg.attr('data-src') || $siblingImg.attr('data-lazy-src');
+          const $siblings = $elem.parent().siblings();
+          for (const selector of imageSelectors) {
+            const $img = $siblings.find(selector).first();
+            if ($img.length) {
+              imageUrl = $img.attr('src') || $img.attr('data-src') || $img.attr('data-lazy-src') || $img.attr('data-original');
+              if (imageUrl) break;
+            }
           }
         }
         
-        // If no image found, look for parent container images
+        // Strategy 3: Look in parent container
         if (!imageUrl) {
-          const $containerImg = $elem.parent().find('img').first();
-          if ($containerImg.length) {
-            imageUrl = $containerImg.attr('src') || $containerImg.attr('data-src') || $containerImg.attr('data-lazy-src');
+          const $container = $elem.parent().parent();
+          for (const selector of imageSelectors) {
+            const $img = $container.find(selector).first();
+            if ($img.length) {
+              imageUrl = $img.attr('src') || $img.attr('data-src') || $img.attr('data-lazy-src') || $img.attr('data-original');
+              if (imageUrl) break;
+            }
           }
         }
         
-        // Clean up image URL
+        // Strategy 4: Look for Open Graph or meta images in the page (fallback)
+        if (!imageUrl) {
+          const $ogImage = $('meta[property="og:image"]');
+          if ($ogImage.length) {
+            imageUrl = $ogImage.attr('content');
+          }
+        }
+        
+        // Clean up and validate image URL
         if (imageUrl) {
+          // Handle relative URLs
           if (imageUrl.startsWith('/')) {
             const baseUrl = new URL(source.url).origin;
             imageUrl = baseUrl + imageUrl;
           } else if (!imageUrl.startsWith('http')) {
-            imageUrl = source.url + '/' + imageUrl;
+            const baseUrl = new URL(source.url).origin;
+            imageUrl = baseUrl + '/' + imageUrl;
           }
           
-          // Filter out small or irrelevant images
-          if (imageUrl.includes('logo') || imageUrl.includes('icon') || 
-              imageUrl.includes('avatar') || imageUrl.includes('profile') ||
-              imageUrl.includes('1x1') || imageUrl.includes('placeholder')) {
+          // Filter out unwanted images with more comprehensive checks
+          const unwantedPatterns = [
+            'logo', 'icon', 'avatar', 'profile', 'user', 'author',
+            '1x1', 'placeholder', 'blank', 'spacer', 'pixel',
+            'facebook', 'twitter', 'instagram', 'social',
+            'advertisement', 'ad', 'banner', 'sponsor'
+          ];
+          
+          const shouldFilter = unwantedPatterns.some(pattern => 
+            imageUrl.toLowerCase().includes(pattern)
+          );
+          
+          // Also check image dimensions in URL (filter out very small images)
+          const hasSmallDimensions = /\/\d{1,2}x\d{1,2}\/|_\d{1,2}x\d{1,2}\.|\/\d{1,2}\/|\b\d{1,2}x\d{1,2}\b/.test(imageUrl);
+          
+          if (shouldFilter || hasSmallDimensions) {
             imageUrl = null;
           }
         }
