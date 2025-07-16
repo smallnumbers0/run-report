@@ -58,10 +58,8 @@ async function fetchNewsContent(source) {
           link = source.url + '/' + link;
         }
         
-        // Try to find an associated image with more comprehensive selectors
         let imageUrl = null;
         
-        // Try multiple strategies to find images
         const imageSelectors = [
           'img[src]',
           'img[data-src]', 
@@ -70,7 +68,6 @@ async function fetchNewsContent(source) {
           '[style*="background-image"]'
         ];
         
-        // Strategy 1: Look in closest article/card container
         const $parent = $elem.closest('article, .article, .post, .story, .card, .item, .entry, .content');
         if ($parent.length && !imageUrl) {
           for (const selector of imageSelectors) {
@@ -82,7 +79,6 @@ async function fetchNewsContent(source) {
           }
         }
         
-        // Strategy 2: Look for images in nearby siblings
         if (!imageUrl) {
           const $siblings = $elem.parent().siblings();
           for (const selector of imageSelectors) {
@@ -93,8 +89,7 @@ async function fetchNewsContent(source) {
             }
           }
         }
-        
-        // Strategy 3: Look in parent container
+
         if (!imageUrl) {
           const $container = $elem.parent().parent();
           for (const selector of imageSelectors) {
@@ -106,17 +101,14 @@ async function fetchNewsContent(source) {
           }
         }
         
-        // Strategy 4: Look for Open Graph or meta images in the page (fallback)
         if (!imageUrl) {
           const $ogImage = $('meta[property="og:image"]');
           if ($ogImage.length) {
             imageUrl = $ogImage.attr('content');
           }
         }
-        
-        // Clean up and validate image URL
+
         if (imageUrl) {
-          // Handle relative URLs
           if (imageUrl.startsWith('/')) {
             const baseUrl = new URL(source.url).origin;
             imageUrl = baseUrl + imageUrl;
@@ -125,7 +117,7 @@ async function fetchNewsContent(source) {
             imageUrl = baseUrl + '/' + imageUrl;
           }
           
-          // Filter out unwanted images with more comprehensive checks
+    
           const unwantedPatterns = [
             'logo', 'icon', 'avatar', 'profile', 'user', 'author',
             '1x1', 'placeholder', 'blank', 'spacer', 'pixel',
@@ -137,61 +129,27 @@ async function fetchNewsContent(source) {
             imageUrl.toLowerCase().includes(pattern)
           );
           
-          // Also check image dimensions in URL (filter out very small images)
+          
           const hasSmallDimensions = /\/\d{1,2}x\d{1,2}\/|_\d{1,2}x\d{1,2}\.|\/\d{1,2}\/|\b\d{1,2}x\d{1,2}\b/.test(imageUrl);
            if (shouldFilter || hasSmallDimensions) {
             imageUrl = null;
           }
         }
         
-        // Add fallback images if no image found
-        if (!imageUrl) {
-          // Use running-related stock images as fallbacks
-          const fallbackImages = [
-            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Track running
-            'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Marathon runners
-            'https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Trail running
-            'https://images.unsplash.com/photo-1568667256549-094345857637?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Running shoes
-            'https://images.unsplash.com/photo-1526676037777-05a232d2ae80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'  // Running track
-          ];
-          
-          // Assign a consistent image based on article title hash
-          const titleHash = title.split('').reduce((a, b) => {
-            a = ((a << 5) - a) + b.charCodeAt(0);
-            return a & a;
-          }, 0);
-          imageUrl = fallbackImages[Math.abs(titleHash) % fallbackImages.length];
-        }
-        
+        // Only use images that are actually found on the website (no fallbacks)
         console.log(`📸 Image for "${title.substring(0, 50)}...": ${imageUrl ? 'Found' : 'None'}`);
 
         articles.push({
           title: title,
           link: link,
           source: source.name,
-          imageUrl: imageUrl
+          imageUrl: imageUrl // Will be null if no real image found
         });
       }
-    });        // Add fallback images if no image found
-        if (!imageUrl) {
-          // Use running-related stock images as fallbacks
-          const fallbackImages = [
-            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Track running
-            'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Marathon runners
-            'https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Trail running
-            'https://images.unsplash.com/photo-1568667256549-094345857637?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80', // Running shoes
-            'https://images.unsplash.com/photo-1526676037777-05a232d2ae80?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'  // Running track
-          ];
-          
-          // Assign a consistent image based on article title hash
-          const titleHash = title.split('').reduce((a, b) => {
-            a = ((a << 5) - a) + b.charCodeAt(0);
-            return a & a;
-          }, 0);
-          imageUrl = fallbackImages[Math.abs(titleHash) % fallbackImages.length];
-        }
-        
-        console.log(`📸 Image for "${title.substring(0, 50)}...": ${imageUrl ? 'Found' : 'None'}`);
+    });
+    
+    console.log(`✅ Found ${articles.length} articles from ${source.name}`);
+    return articles.slice(0, 3);
     
   } catch (error) {
     console.error(`❌ Error fetching ${source.name}:`, error.message);
@@ -244,7 +202,7 @@ Return only valid JSON with this format:
   const data = await response.json();
   const content = data.choices[0].message.content;
   
-  // Extract JSON from response
+
   const jsonMatch = content.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error('No valid JSON in response');
@@ -254,8 +212,7 @@ Return only valid JSON with this format:
 }
 
 async function updateContentWithWebhook(newsEntry, webhookUrl) {
-  // Trigger a rebuild with the new content
-  // This would integrate with a headless CMS or git-based workflow
+
   const response = await fetch(webhookUrl, {
     method: 'POST',
     headers: {
@@ -272,7 +229,7 @@ async function updateContentWithWebhook(newsEntry, webhookUrl) {
 }
 
 export const handler = async (event, context) => {
-  // Check if this is a scheduled function call
+ 
   if (event.httpMethod !== 'POST' && !event.isScheduled) {
     return {
       statusCode: 405,
@@ -289,7 +246,7 @@ export const handler = async (event, context) => {
 
     console.log('🏃 Starting Netlify news scraper...');
     
-    // Fetch articles from all sources
+
     const articlePromises = NEWS_SOURCES.map(fetchNewsContent);
     const articleSets = await Promise.all(articlePromises);
     const allArticles = articleSets.flat().filter(article => article);
@@ -300,16 +257,16 @@ export const handler = async (event, context) => {
     
     console.log(`📊 Found ${allArticles.length} total articles`);
     
-    // Select 2 best articles
+
     const prioritySources = ['The New York Times', 'Runner\'s World', 'FloTrack', 'Running USA'];
     
-    // Get high-priority articles first
+   
     const priorityArticles = allArticles.filter(article => 
       prioritySources.includes(article.source) && 
       !article.title.toLowerCase().includes('air quality')
     );
     
-    // Get other interesting articles (avoid air quality and generic titles)
+ 
     const otherArticles = allArticles.filter(article => 
       !prioritySources.includes(article.source) &&
       !article.title.toLowerCase().includes('air quality') &&
@@ -317,15 +274,14 @@ export const handler = async (event, context) => {
       !article.title.toLowerCase().includes('forecast')
     );
     
-    // Combine and take best 2 articles
+  
     const candidateArticles = [...priorityArticles, ...otherArticles];
     const selectedArticles = candidateArticles.slice(0, 2).length >= 2 
       ? candidateArticles.slice(0, 2) 
-      : allArticles.slice(0, 2); // Fallback to any 2 articles if not enough candidates
+      : allArticles.slice(0, 2); 
     
     console.log(`🎯 Selected ${selectedArticles.length} articles for processing`);
     
-    // Generate summaries with OpenAI for both articles
     console.log('🤖 Creating summaries with OpenAI...');
     const newsEntries = await Promise.all(
       selectedArticles.map(article => generateNewsWithOpenAI(article, OPENAI_API_KEY))
@@ -333,7 +289,7 @@ export const handler = async (event, context) => {
     
     console.log(`📝 Generated ${newsEntries.length} entries:`, newsEntries.map(entry => entry.title));
     
-    // If webhook URL is provided, trigger rebuild with both articles
+  
     if (WEBHOOK_URL) {
       await Promise.all(
         newsEntries.map(entry => updateContentWithWebhook(entry, WEBHOOK_URL))
@@ -349,7 +305,7 @@ export const handler = async (event, context) => {
       },
       body: JSON.stringify({
         success: true,
-        articles: newsEntries, // Now returns array of articles
+        articles: newsEntries, 
         articlesFound: allArticles.length,
         articlesProcessed: newsEntries.length
       })
