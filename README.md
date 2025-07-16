@@ -6,4 +6,4 @@ The Running Report is here to help compile the latest news in a easy to read for
 
 https://run-report.netlify.app/
 
-### This is a vibe coded project
+More news comes out every 6 AM PST! This project uses open ai 4o mini model and any donation will be used for the lifespan of this website: https://coff.ee/smallnumbers
