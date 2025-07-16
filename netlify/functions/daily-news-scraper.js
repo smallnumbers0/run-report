@@ -165,7 +165,7 @@ async function generateNewsWithOpenAI(article, apiKey) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o-mini', // Upgraded from gpt-3.5-turbo for better summaries
       messages: [
         {
           role: 'system',
@@ -184,14 +184,14 @@ Return only valid JSON with this format:
 {
   "title": "Original article title",
   "date": "${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}",
-  "content": "2-3 sentence engaging summary based on the title",
+  "content": "4-5 sentences of engaging summary based on the article",
   "source": "${article.source}",
   "link": "${article.link}"${article.imageUrl ? `,\n  "imageUrl": "${article.imageUrl}"` : ''}
 }`
         }
       ],
-      temperature: 0.3,
-      max_tokens: 400
+      temperature: 0.5,
+      max_tokens: 500
     })
   });
 
