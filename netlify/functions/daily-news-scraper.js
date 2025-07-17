@@ -246,12 +246,33 @@ export const handler = async (event, context) => {
     
     console.log(`📝 Generated ${newsEntries.length} entries:`, newsEntries.map(entry => entry.title));
     
-  
+    // Call the blog update webhook function
+    try {
+      const updateResponse = await fetch(`${process.env.URL || 'https://run-report.netlify.app'}/.netlify/functions/update-blog-posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          articles: newsEntries
+        })
+      });
+      
+      if (updateResponse.ok) {
+        console.log('🔄 Blog posts update webhook triggered successfully');
+      } else {
+        console.error('❌ Failed to trigger blog update:', updateResponse.statusText);
+      }
+    } catch (webhookError) {
+      console.error('❌ Webhook error:', webhookError.message);
+    }
+    
+    // Legacy webhook support
     if (WEBHOOK_URL) {
       await Promise.all(
         newsEntries.map(entry => updateContentWithWebhook(entry, WEBHOOK_URL))
       );
-      console.log('🔄 Triggered site rebuild with multiple articles');
+      console.log('🔄 Triggered legacy webhook');
     }
     
     return {
