@@ -15,24 +15,14 @@ export const handler = async (event, context) => {
       throw new Error('No articles provided');
     }
 
-    // Format articles for blog-posts.json
-    const formattedArticles = articles.map((article, index) => ({
-      title: article.title,
-      date: article.date,
-      content: article.content,
-      source: article.source,
-      link: article.link,
-      id: (index + 1).toString()
-    }));
-
-    console.log(`📝 Formatted ${formattedArticles.length} articles for update`);
-
     // GitHub API integration for automatic file updates
     const { GITHUB_TOKEN, GITHUB_REPO = 'run-report', GITHUB_OWNER = 'smallnumbers0' } = process.env;
     
+    let finalArticles = [];
+    
     if (GITHUB_TOKEN) {
       try {
-        // Get current file
+        // Get current file to merge with existing articles
         const fileResponse = await fetch(
           `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/src/data/blog-posts.json`,
           {
@@ -46,7 +36,42 @@ export const handler = async (event, context) => {
         if (fileResponse.ok) {
           const fileData = await fileResponse.json();
           
-          // Update file
+          // Decode existing articles
+          let existingArticles = [];
+          try {
+            const existingContent = Buffer.from(fileData.content, 'base64').toString('utf-8');
+            existingArticles = JSON.parse(existingContent);
+            console.log(`📚 Found ${existingArticles.length} existing articles`);
+          } catch (parseError) {
+            console.log('📝 No existing articles found, starting fresh');
+            existingArticles = [];
+          }
+          
+          // Format new articles
+          const newFormattedArticles = articles.map((article) => ({
+            title: article.title,
+            date: article.date,
+            content: article.content,
+            source: article.source,
+            link: article.link,
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9) // Unique ID
+          }));
+          
+          // Combine existing and new articles
+          const allArticles = [...newFormattedArticles, ...existingArticles];
+          
+          // Sort by date (newest first) and limit to 10 articles
+          finalArticles = allArticles
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 10)
+            .map((article, index) => ({
+              ...article,
+              id: (index + 1).toString() // Reassign sequential IDs
+            }));
+          
+          console.log(`📝 Final article count: ${finalArticles.length} (added ${newFormattedArticles.length} new, keeping 10 most recent)`);
+          
+          // Update file with merged articles
           const updateResponse = await fetch(
             `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/src/data/blog-posts.json`,
             {
@@ -57,8 +82,8 @@ export const handler = async (event, context) => {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                message: `Update blog posts - ${new Date().toLocaleDateString()}`,
-                content: Buffer.from(JSON.stringify(formattedArticles, null, 2)).toString('base64'),
+                message: `Update blog posts - ${new Date().toLocaleDateString()} (${newFormattedArticles.length} new articles, ${finalArticles.length} total)`,
+                content: Buffer.from(JSON.stringify(finalArticles, null, 2)).toString('base64'),
                 sha: fileData.sha
               })
             }
@@ -75,7 +100,8 @@ export const handler = async (event, context) => {
               body: JSON.stringify({
                 success: true,
                 message: 'Blog posts updated automatically via GitHub API',
-                articlesCount: formattedArticles.length,
+                articlesCount: finalArticles.length,
+                newArticles: newFormattedArticles.length,
                 method: 'github-api'
               })
             };
@@ -86,6 +112,18 @@ export const handler = async (event, context) => {
       } catch (githubError) {
         console.error('❌ GitHub API error:', githubError.message);
       }
+    }
+    
+    // Fallback formatting if GitHub API not available
+    if (finalArticles.length === 0) {
+      finalArticles = articles.map((article, index) => ({
+        title: article.title,
+        date: article.date,
+        content: article.content,
+        source: article.source,
+        link: article.link,
+        id: (index + 1).toString()
+      }));
     }
     
     // Fallback: trigger build hook if GitHub API fails or token not available
@@ -114,9 +152,9 @@ export const handler = async (event, context) => {
       body: JSON.stringify({
         success: true,
         message: 'Webhook processed - build triggered',
-        articlesCount: formattedArticles.length,
+        articlesCount: finalArticles.length,
         method: 'build-hook',
-        articles: formattedArticles
+        articles: finalArticles
       })
     };
 
