@@ -57,11 +57,21 @@ export const handler = async (event, context) => {
             id: Date.now().toString() + Math.random().toString(36).substr(2, 9) // Unique ID
           }));
           
-          // Combine existing and new articles
+          // Combine existing and new articles, removing duplicates
           const allArticles = [...newFormattedArticles, ...existingArticles];
           
+          // Remove duplicates based on title and link
+          const uniqueArticles = allArticles.filter((article, index, self) => {
+            return index === self.findIndex((a) => 
+              a.title.toLowerCase().trim() === article.title.toLowerCase().trim() || 
+              a.link === article.link
+            );
+          });
+          
+          console.log(`🔍 Removed ${allArticles.length - uniqueArticles.length} duplicate articles`);
+          
           // Sort by date (newest first) and limit to 10 articles
-          finalArticles = allArticles
+          finalArticles = uniqueArticles
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .slice(0, 10)
             .map((article, index) => ({
@@ -82,7 +92,7 @@ export const handler = async (event, context) => {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                message: `Update blog posts - ${new Date().toLocaleDateString()} (${newFormattedArticles.length} new articles, ${finalArticles.length} total)`,
+                message: `Update blog posts - ${new Date().toLocaleDateString()} (${newFormattedArticles.length} new articles, ${finalArticles.length} total, duplicates removed)`,
                 content: Buffer.from(JSON.stringify(finalArticles, null, 2)).toString('base64'),
                 sha: fileData.sha
               })

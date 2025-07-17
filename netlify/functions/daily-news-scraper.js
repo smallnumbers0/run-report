@@ -215,11 +215,21 @@ export const handler = async (event, context) => {
   
     const candidateArticles = [...priorityArticles, ...otherArticles];
     
+    // Remove duplicates from candidate articles based on title and link
+    const uniqueCandidates = candidateArticles.filter((article, index, self) => {
+      return index === self.findIndex((a) => 
+        a.title.toLowerCase().trim() === article.title.toLowerCase().trim() || 
+        a.link === article.link
+      );
+    });
+    
+    console.log(`🔍 Removed ${candidateArticles.length - uniqueCandidates.length} duplicate candidates`);
+    
     // Select up to 3 articles from different sources to ensure diversity
     const selectedArticles = [];
     const usedSources = new Set();
     
-    for (const article of candidateArticles) {
+    for (const article of uniqueCandidates) {
       if (selectedArticles.length >= 3) break;
       if (!usedSources.has(article.source)) {
         selectedArticles.push(article);
@@ -229,7 +239,7 @@ export const handler = async (event, context) => {
     
     // If we don't have 3 articles from different sources, fill with remaining articles
     if (selectedArticles.length < 3) {
-      for (const article of candidateArticles) {
+      for (const article of uniqueCandidates) {
         if (selectedArticles.length >= 3) break;
         if (!selectedArticles.some(selected => selected.link === article.link)) {
           selectedArticles.push(article);
