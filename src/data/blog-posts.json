@@ -1,11 +1,27 @@
 [
   {
+    "title": "Sinclaire Johnson Sets The American Record In The Mile",
+    "date": "July 19, 2025",
+    "content": "In a stunning display of speed and endurance, Sinclaire Johnson shattered the American record for the mile, clocking an impressive time that has sent shockwaves through the running community. Her performance not only highlights her exceptional talent but also cements her status as one of the top middle-distance runners in the nation. Fans and fellow athletes alike are celebrating this historic achievement, which marks a new chapter in American track and field. Johnson's record-setting run promises to inspire a new generation of runners.",
+    "source": "FloTrack",
+    "link": "https://www.flotrack.org/articles/14401068-sinclaire-johnson-sets-the-american-record-in-the-mile",
+    "id": "1"
+  },
+  {
+    "title": "London DL is Saturday",
+    "date": "July 19, 2025",
+    "content": "The highly anticipated London Diamond League event is set to take place this Saturday, featuring top athletes from around the world. Fans can expect thrilling races in various track and field disciplines, showcasing both emerging talents and seasoned champions. With perfect weather conditions predicted, the stage is set for record-breaking performances. Don't miss the excitement as the world's best compete at this iconic venue.",
+    "source": "LetsRun",
+    "link": "https://www.letsrun.com/events/2025/07/2025-novuna-london-athletics-meet-london-diamond-league",
+    "id": "2"
+  },
+  {
     "title": "Watch Diamond League London Stream Free With The Athlete's",
     "date": "July 18, 2025",
     "content": "Fans can catch the exciting Diamond League London event for free through The Athlete's Lounge broadcast. This unique streaming opportunity allows viewers to experience the races from the perspective of the athletes themselves, providing insights and commentary that enhance the viewing experience. Don't miss out on the chance to see top runners compete at one of the premier events in the athletics calendar.",
     "source": "FloTrack",
     "link": "https://www.flotrack.org/articles/14394507-watch-diamond-league-london-stream-free-with-the-athletes-lounge-broadcast",
-    "id": "1"
+    "id": "3"
   },
   {
     "title": "Donavan Brazier Ready To Challenge On World Stage Again",
@@ -13,7 +29,7 @@
     "content": "After a two-year hiatus, Donavan Brazier is set to return to the Diamond League stage at the Stockholm Distance Meeting. The American middle-distance runner has been training hard and is eager to make his mark on the global running community once again.",
     "source": "FloTrack",
     "link": "https://www.flotrack.org/articles/14394503-donavan-brazier-headed-to-his-first-diamond-league-meet-since-2019",
-    "id": "2"
+    "id": "4"
   },
   {
     "title": "2025 Wanda Diamond League Standings, Who Is Leading?",
@@ -21,7 +37,7 @@
     "content": "As the 2025 Wanda Diamond League season progresses, athletes are fiercely competing for top rankings. Notable performances have emerged, with several stars showcasing their talents and vying for the coveted diamond trophies. The standings are shaping up with a mix of seasoned veterans and rising newcomers. Fans are eagerly watching to see who will maintain their lead as the season approaches its climax.",
     "source": "FloTrack",
     "link": "https://www.flotrack.org/articles/14185884-2025-wanda-diamond-league-standings-who-is-leading",
-    "id": "3"
+    "id": "5"
   },
   {
     "title": "Marathon world record holder Ruth Chepngetich suspended for doping",
@@ -29,7 +45,7 @@
     "content": "Ruth Chepngetich, the reigning marathon world record holder, has been provisionally suspended due to a doping violation. The suspension follows an investigation that revealed the presence of banned substances in her system. This shocking news has sent ripples through the running community, as Chepngetich was celebrated for her remarkable achievements. The case highlights ongoing concerns about doping in athletics and the need for stringent enforcement of anti-doping regulations.",
     "source": "Running Magazine",
     "link": "https://runningmagazine.ca/the-scene/marathon-world-record-holder-ruth-chepngetich-gets-provisional-doping-suspension/",
-    "id": "4"
+    "id": "6"
   },
   {
     "title": "TCS Toronto Waterfront Marathon unveils 2025 race medal",
@@ -37,7 +53,7 @@
     "content": "The TCS Toronto Waterfront Marathon has revealed its medal design for the 2025 race, showcasing a vibrant and unique aesthetic that celebrates the spirit of the city. This year's medal features iconic landmarks and a modern twist, appealing to both participants and collectors. Organizers aim to enhance the runner experience, making the medal not just a reward but a cherished memento. With anticipation building for the event, runners are encouraged to register early to secure their spot.",
     "source": "Running Magazine",
     "link": "https://runningmagazine.ca/sections/runs-races/tcs-toronto-waterfront-marathon-unveils-2025-race-medal/",
-    "id": "5"
+    "id": "7"
   },
   {
     "title": "Noah Lyles Runs 100m Season Debut at the London DL: Full Meet Preview",
@@ -45,7 +61,15 @@
     "content": "Noah Lyles is set to make his highly anticipated 100m season debut at the London Diamond League. Fans are eager to see how the reigning world champion will perform as he takes on a competitive field. The meet promises thrilling races and showcases top athletes from around the globe, making it a must-watch event for track and field enthusiasts. Lyles aims to establish his dominance early in the season.",
     "source": "FloTrack",
     "link": "https://www.flotrack.org/articles/14388159-noah-lyles-runs-100m-season-debut-at-the-london-dl-full-meet-preview",
-    "id": "6"
+    "id": "8"
+  },
+  {
+    "title": "Ottawa woman’s 45-year run streak comes to an end",
+    "date": "October 19, 2023",
+    "content": "In a bittersweet turn of events, an Ottawa woman has officially ended her remarkable 45-year running streak, a feat that has inspired countless fellow runners. After years of dedication and daily miles, she cited health concerns as the reason for concluding her streak. Her journey has been marked by resilience and commitment, making her a beloved figure in the local running community. As she reflects on her incredible achievement, she encourages others to find joy in running, regardless of how far they go.",
+    "source": "Running Magazine",
+    "link": "https://runningmagazine.ca/the-scene/ottawa-womans-45-year-run-streak-comes-to-an-end/",
+    "id": "9"
   },
   {
     "title": "Toronto runners: join “Finish the Run” to help end gender-based violence",
@@ -53,14 +77,6 @@
     "content": "Toronto is rallying runners to participate in the 'Finish the Run' event aimed at raising awareness and funds to combat gender-based violence. This initiative encourages community involvement and promotes a message of solidarity and support for victims. Participants will have the chance to run, walk, or volunteer, all while contributing to a vital cause. Join the movement to make a difference in the lives of those affected by violence.",
     "source": "Running Magazine",
     "link": "https://runningmagazine.ca/the-scene/toronto-runners-join-finish-the-run-to-help-end-gender-based-violence/",
-    "id": "7"
-  },
-  {
-    "title": "Noah Lyles Eyes London Glory in 100m Showdown",
-    "date": "October 18, 2023",
-    "content": "Noah Lyles is set to compete in the highly anticipated 100m race at the upcoming London meet, aiming to solidify his status as one of the fastest sprinters in the world. Fresh off his impressive performances this season, Lyles is focused on breaking personal records and claiming victory on the prestigious track. With fierce competitors lining up, the showdown promises to be thrilling as Lyles seeks to make a statement ahead of the Olympic season.",
-    "source": "FloTrack",
-    "link": "https://www.flotrack.org/articles/14393274-noah-lyles-eyes-london-glory-in-100m-showdown",
-    "id": "8"
+    "id": "10"
   }
 ]
